@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "librt"
+description = "Mypyc runtime library"
+readme = {text = """
+Mypyc runtime library
+=====================
+
+This is currently a placeholder. Actual package will be uploaded later.
+""", content-type = "text/x-rst"}
+authors = [
+    {name = "Jukka Lehtosalo", email = "jukka.lehtosalo@iki.fi"},
+    {name = "Ivan Levkivskyi", email = "levkivskyi@gmail.com"},
+]
+version = "0.0.1"
+license = {text = "MIT"}
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development",
+  "Typing :: Typed",
+]
+requires-python = ">=3.9"
+[project.urls]
+Homepage = "https://github.com/mypyc/librt"
+Issues = "https://github.com/mypyc/mypyc/issues"
