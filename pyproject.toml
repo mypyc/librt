@@ -9,7 +9,11 @@ readme = {text = """
 Mypyc runtime library
 =====================
 
-This is currently a placeholder. Actual package will be uploaded later.
+This library contains efficient C implementations of various Python standard
+library classes and functions. Mypyc can use these fast implementations when
+compiling Python code to native extension modules.
+
+Mypyc compiler is a part of `mypy distribution <https://pypi.org/project/mypy>`__.
 """, content-type = "text/x-rst"}
 authors = [
     {name = "Jukka Lehtosalo", email = "jukka.lehtosalo@iki.fi"},
@@ -18,7 +22,7 @@ authors = [
 version = "0.0.1"
 license = {text = "MIT"}
 classifiers = [
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Environment :: Console",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
@@ -36,3 +40,26 @@ requires-python = ">=3.9"
 [project.urls]
 Homepage = "https://github.com/mypyc/librt"
 Issues = "https://github.com/mypyc/mypyc/issues"
+
+[tool.cibuildwheel]
+
+build-frontend = "build"
+linux.manylinux-x86_64-image = "manylinux_2_28"
+linux.manylinux-aarch64-image = "manylinux_2_28"
+linux.musllinux-x86_64-image = "musllinux_1_2"
+linux.musllinux-aarch64-image = "musllinux_1_2"
+
+build-verbosity = 1
+
+linux.before-all = [
+  "yum install -y llvm-toolset || yum -v install -y llvm-toolset",
+]
+
+[tool.cibuildwheel.linux.environment]
+CC="clang"
+
+[[tool.cibuildwheel.overrides]]
+select = "*musllinux*"
+before-all = [
+  "apk add --no-cache clang",
+]

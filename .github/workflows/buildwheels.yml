@@ -1,0 +1,86 @@
+name: Build wheels
+
+on: [push, pull_request, workflow_dispatch]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  wheels:
+    name: "${{ matrix.py }} ${{ matrix.os }} ${{ matrix.arch }} wheels"
+    runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
+    env:
+      MATRIX_ID: "${{ matrix.py }}-${{ matrix.os }}-${{ matrix.arch }}"
+    strategy:
+      matrix:
+        include:
+          - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp314", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp314", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp314", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "macos", "py": "cp39", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp310", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp311", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp312", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp313", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp314", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp39", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp310", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp311", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp312", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp313", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp314", "arch": "x86_64", "os-version": "13"}
+          - {"os": "windows", "py": "cp39", "arch": "x86"}
+          - {"os": "windows", "py": "cp310", "arch": "x86"}
+          - {"os": "windows", "py": "cp311", "arch": "x86"}
+          - {"os": "windows", "py": "cp312", "arch": "x86"}
+          - {"os": "windows", "py": "cp313", "arch": "x86"}
+          - {"os": "windows", "py": "cp314", "arch": "x86"}
+          - {"os": "windows", "py": "cp39", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp310", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp311", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp312", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp313", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp314", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp311", "arch": "ARM64", "os-version": "11-arm"}
+          - {"os": "windows", "py": "cp312", "arch": "ARM64", "os-version": "11-arm"}
+          - {"os": "windows", "py": "cp313", "arch": "ARM64", "os-version": "11-arm"}
+          - {"os": "windows", "py": "cp314", "arch": "ARM64", "os-version": "11-arm"}
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy config
+        shell: bash
+        run: |
+          cp pyproject.toml lib-rt
+          cd lib-rt
+
+      - uses: pypa/cibuildwheel@v3.2.0
+        with:
+          config-file: pyproject.toml
+        env:
+          CIBW_BUILD: ${{ matrix.py }}*-*
+          CIBW_ARCHS: ${{ matrix.arch }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ env.MATRIX_ID }}
+          path: ./wheelhouse/*.whl
+          overwrite: true
