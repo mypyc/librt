@@ -99,3 +99,17 @@ jobs:
           name: dist-${{ env.MATRIX_ID }}
           path: ./wheelhouse/*.whl
           overwrite: true
+
+  release:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: dist-*
+          path: dist
+          merge-multiple: true
+      - name: Release to PyPI
+        uses: pypa/gh-action-pypi-publish@v1
