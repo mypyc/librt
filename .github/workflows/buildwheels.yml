@@ -1,66 +1,82 @@
 name: Build wheels
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  wheels:
+  generate_wheels_matrix:
+    name: Generate wheels matrix
+    runs-on: ubuntu-latest
+    outputs:
+      include: ${{ steps.set-matrix.outputs.include }}
+    steps:
+      - id: set-matrix
+        shell: python
+        run: |
+          import json
+          import os
+          import pprint
+
+          # Operating systems:
+          oss = ["ubuntu", "macos", "windows"]
+
+          # For each OS, what arch to use with cibuildwheel:
+          os_archs = {
+              "ubuntu": ["x86_64", "i686", "aarch64"],
+              "macos": ["arm64", "x86_64"],
+              "windows": ["x86", "AMD64", "ARM64"],
+          }
+
+          # Available Python versions: https://pypi.org/project/cibuildwheel/
+          # Note that cibuildwheel recommends not shipping wheels for pre-release versions
+          # of Python: https://cibuildwheel.readthedocs.io/en/stable/options/#enable
+          pys = ["cp39", "cp310", "cp311", "cp312", "cp313", "cp314"]
+
+          # Some OS/arch combinations are only suported on newer Python versions:
+          os_arch_pys = {
+              ("windows", "ARM64"): ["cp311", "cp312", "cp313", "cp314"],
+          }
+
+          all_them = []
+          for the_os in oss:
+              for the_arch in os_archs[the_os]:
+                  for the_py in os_arch_pys.get((the_os, the_arch), pys):
+                      them = {
+                          "os": the_os,
+                          "py": the_py,
+                          "arch": the_arch,
+                      }
+                      # For some OS/arch we need to specify OS version
+                      if the_os == "macos":
+                          them["os-version"] = "13"
+                      if the_os == "windows" and the_arch == "ARM64":
+                          them["os-version"] = "11-arm"
+                      if the_arch == "aarch64":
+                          # https://github.com/pypa/cibuildwheel/issues/2257
+                          them["os-version"] = "22.04-arm"
+                      all_them.append(them)
+
+          pprint.pprint(all_them)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"include={json.dumps(all_them)}\n")
+
+  build_wheels:
     name: "${{ matrix.py }} ${{ matrix.os }} ${{ matrix.arch }} wheels"
+    needs: generate_wheels_matrix
     runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
     env:
       MATRIX_ID: "${{ matrix.py }}-${{ matrix.os }}-${{ matrix.arch }}"
     strategy:
       matrix:
-        include:
-          - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp312", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp313", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp314", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp313", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp314", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64", "os-version": "22.04-arm"}
-          - {"os": "ubuntu", "py": "cp310", "arch": "aarch64", "os-version": "22.04-arm"}
-          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64", "os-version": "22.04-arm"}
-          - {"os": "ubuntu", "py": "cp312", "arch": "aarch64", "os-version": "22.04-arm"}
-          - {"os": "ubuntu", "py": "cp313", "arch": "aarch64", "os-version": "22.04-arm"}
-          - {"os": "ubuntu", "py": "cp314", "arch": "aarch64", "os-version": "22.04-arm"}
-          - {"os": "macos", "py": "cp39", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp310", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp311", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp312", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp313", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp314", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp39", "arch": "x86_64", "os-version": "13"}
-          - {"os": "macos", "py": "cp310", "arch": "x86_64", "os-version": "13"}
-          - {"os": "macos", "py": "cp311", "arch": "x86_64", "os-version": "13"}
-          - {"os": "macos", "py": "cp312", "arch": "x86_64", "os-version": "13"}
-          - {"os": "macos", "py": "cp313", "arch": "x86_64", "os-version": "13"}
-          - {"os": "macos", "py": "cp314", "arch": "x86_64", "os-version": "13"}
-          - {"os": "windows", "py": "cp39", "arch": "x86"}
-          - {"os": "windows", "py": "cp310", "arch": "x86"}
-          - {"os": "windows", "py": "cp311", "arch": "x86"}
-          - {"os": "windows", "py": "cp312", "arch": "x86"}
-          - {"os": "windows", "py": "cp313", "arch": "x86"}
-          - {"os": "windows", "py": "cp314", "arch": "x86"}
-          - {"os": "windows", "py": "cp39", "arch": "AMD64"}
-          - {"os": "windows", "py": "cp310", "arch": "AMD64"}
-          - {"os": "windows", "py": "cp311", "arch": "AMD64"}
-          - {"os": "windows", "py": "cp312", "arch": "AMD64"}
-          - {"os": "windows", "py": "cp313", "arch": "AMD64"}
-          - {"os": "windows", "py": "cp314", "arch": "AMD64"}
-          - {"os": "windows", "py": "cp311", "arch": "ARM64", "os-version": "11-arm"}
-          - {"os": "windows", "py": "cp312", "arch": "ARM64", "os-version": "11-arm"}
-          - {"os": "windows", "py": "cp313", "arch": "ARM64", "os-version": "11-arm"}
-          - {"os": "windows", "py": "cp314", "arch": "ARM64", "os-version": "11-arm"}
+        include: ${{ fromJson(needs.generate_wheels_matrix.outputs.include) }}
       fail-fast: false
 
     steps:
