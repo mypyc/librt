@@ -104,6 +104,8 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: build_wheels
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
