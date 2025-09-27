@@ -101,6 +101,7 @@ jobs:
           overwrite: true
 
   release:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: build_wheels
     runs-on: ubuntu-latest
     steps:
@@ -111,5 +112,4 @@ jobs:
           path: dist
           merge-multiple: true
       - name: Release to PyPI
-        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: pypa/gh-action-pypi-publish@v1
