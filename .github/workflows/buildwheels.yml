@@ -57,7 +57,8 @@ jobs:
                           them["os-version"] = "22.04-arm"
                       all_them.append(them)
           pprint.pprint(all_them)
-          os.environ["GITHUB_OUTPUT"] = f"include={json.dumps(all_them)}"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"include={json.dumps(all_them)}\n")
 
   wheels:
     name: "${{ matrix.py }} ${{ matrix.os }} ${{ matrix.arch }} wheels"
