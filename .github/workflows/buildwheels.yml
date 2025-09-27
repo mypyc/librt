@@ -55,7 +55,7 @@ jobs:
                           # https://github.com/pypa/cibuildwheel/issues/2257
                           them["os-version"] = "22.04-arm"
                       all_them.append(them)
-          pprint(all_them)
+          pprint.pprint(all_them)
           os.environ["GITHUB_OUTPUT"] = f"include={json.dumps(all_them)}"
 
   wheels:
