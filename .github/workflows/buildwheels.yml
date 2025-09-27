@@ -66,11 +66,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Copy config
+      - name: Copy library content
         shell: bash
         run: |
-          cp pyproject.toml lib-rt
-          cd lib-rt
+          cp lib-rt/* .
 
       - uses: pypa/cibuildwheel@v3.2.0
         with:
