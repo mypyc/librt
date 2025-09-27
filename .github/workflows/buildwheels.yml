@@ -17,6 +17,7 @@ jobs:
         shell: python
         run: |
           import json
+          import os
           import pprint
 
           # Operating systems:
