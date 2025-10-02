@@ -33,7 +33,7 @@ jobs:
               "ubuntu": ["x86_64", "i686", "aarch64"],
               "macos": ["arm64", "x86_64"],
               "windows": ["x86", "AMD64", "ARM64"],
-              "pyodide", ["wasm32"],
+              "pyodide": ["wasm32"],
           }
 
           # Available Python versions: https://pypi.org/project/cibuildwheel/
