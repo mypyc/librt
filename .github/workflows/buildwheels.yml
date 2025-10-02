@@ -140,5 +140,9 @@ jobs:
           pattern: dist-*
           path: dist
           merge-multiple: true
+      - name: Skip WASM wheels (not supported by PyPI yet)
+        run: rm dist/*_wasm32.whl
       - name: Release to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
