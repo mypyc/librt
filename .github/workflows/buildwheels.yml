@@ -54,9 +54,10 @@ jobs:
           for the_platform in platforms:
               for the_arch in platform_archs[the_platform]:
                   for the_py in platform_arch_pys.get((the_platform, the_arch), pys):
+                      the_os = platform_os.get(the_platform, the_platform)
                       them = {
                           "platform": the_platform,
-                          "os": platform_os.get(the_platform, the_platform),
+                          "os": the_os,
                           "py": the_py,
                           "arch": the_arch,
                       }
