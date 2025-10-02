@@ -26,11 +26,11 @@ jobs:
           import pprint
 
           # Platforms:
-          platforms = ["ubuntu", "macos", "windows", "pyodide"]
+          platforms = ["linux", "macos", "windows", "pyodide"]
 
           # For each platform, what arch to use with cibuildwheel:
           platform_archs = {
-              "ubuntu": ["x86_64", "i686", "aarch64"],
+              "linux": ["x86_64", "i686", "aarch64"],
               "macos": ["arm64", "x86_64"],
               "windows": ["x86", "AMD64", "ARM64"],
               "pyodide": ["wasm32"],
@@ -48,7 +48,7 @@ jobs:
           }
 
           # Which OS to use for build (if different from platform name):
-          platform_os = {"pyodide": "linux"}
+          platform_os = {"pyodide": "ubuntu", "linux": "ubuntu"}
 
           all_them = []
           for the_platform in platforms:
