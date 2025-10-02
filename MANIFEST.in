@@ -1,0 +1,2 @@
+# Headers are not included by default.
+include *.h
