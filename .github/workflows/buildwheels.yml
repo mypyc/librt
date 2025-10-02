@@ -25,14 +25,15 @@ jobs:
           import os
           import pprint
 
-          # Operating systems:
-          oss = ["ubuntu", "macos", "windows"]
+          # Platforms:
+          platforms = ["ubuntu", "macos", "windows", "pyodide"]
 
-          # For each OS, what arch to use with cibuildwheel:
-          os_archs = {
+          # For each platform, what arch to use with cibuildwheel:
+          platform_archs = {
               "ubuntu": ["x86_64", "i686", "aarch64"],
               "macos": ["arm64", "x86_64"],
               "windows": ["x86", "AMD64", "ARM64"],
+              "pyodide", ["wasm32"],
           }
 
           # Available Python versions: https://pypi.org/project/cibuildwheel/
@@ -40,17 +41,22 @@ jobs:
           # of Python: https://cibuildwheel.readthedocs.io/en/stable/options/#enable
           pys = ["cp39", "cp310", "cp311", "cp312", "cp313", "cp314"]
 
-          # Some OS/arch combinations are only suported on newer Python versions:
-          os_arch_pys = {
+          # Some plaform/arch combinations are only suported on newer Python versions:
+          platform_arch_pys = {
               ("windows", "ARM64"): ["cp311", "cp312", "cp313", "cp314"],
+              ("pyodide", "wasm32"): ["cp312", "cp313"],
           }
 
+          # Which OS to use for build (if different from platform name):
+          platform_os = {"pyodide": "linux"}
+
           all_them = []
-          for the_os in oss:
-              for the_arch in os_archs[the_os]:
-                  for the_py in os_arch_pys.get((the_os, the_arch), pys):
+          for the_platform in platforms:
+              for the_arch in platform_archs[the_platform]:
+                  for the_py in platform_arch_pys.get((the_platform, the_arch), pys):
                       them = {
-                          "os": the_os,
+                          "platform": the_platform,
+                          "os": platform_os.get(the_platform, the_platform),
                           "py": the_py,
                           "arch": the_arch,
                       }
@@ -69,11 +75,11 @@ jobs:
               f.write(f"include={json.dumps(all_them)}\n")
 
   build_wheels:
-    name: "${{ matrix.py }} ${{ matrix.os }} ${{ matrix.arch }} wheels"
+    name: "${{ matrix.py }} ${{ matrix.platform }} ${{ matrix.arch }} wheels"
     needs: generate_wheels_matrix
     runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
     env:
-      MATRIX_ID: "${{ matrix.py }}-${{ matrix.os }}-${{ matrix.arch }}"
+      MATRIX_ID: "${{ matrix.py }}-${{ matrix.platform }}-${{ matrix.arch }}"
     strategy:
       matrix:
         include: ${{ fromJson(needs.generate_wheels_matrix.outputs.include) }}
@@ -93,6 +99,7 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.py }}*-*
           CIBW_ARCHS: ${{ matrix.arch }}
+          CIBW_PLATFORM: ${{ matrix.platform }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -100,9 +107,28 @@ jobs:
           path: ./wheelhouse/*.whl
           overwrite: true
 
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: "3.9"
+      - name: Build sdist
+        run: |
+          cp lib-rt/* .
+          pip install --upgrade setuptools build
+          python -m build --sdist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-sdist
+          path: dist/*.tar.gz
+
   release:
     if: ${{ github.event_name == 'workflow_dispatch' }}
-    needs: build_wheels
+    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
