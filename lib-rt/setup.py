@@ -75,9 +75,9 @@ else:
     setup(
         ext_modules=[
             Extension(
-                "native_internal",
+                "librt.internal",
                 [
-                    "native_internal.c",
+                    "librt_internal.c",
                     "init.c",
                     "int_ops.c",
                     "exc_ops.c",
@@ -86,5 +86,5 @@ else:
                 ],
                 include_dirs=["."],
             )
-        ],
+        ]
     )

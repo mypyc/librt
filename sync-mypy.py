@@ -7,8 +7,9 @@ REPO = "https://github.com/python/mypy"
 
 def main() -> None:
     with tempfile.TemporaryDirectory() as tmp_dir:
-        mypy_dir = os.path.join(tmp_dir, "mypy")    
+        mypy_dir = os.path.join(tmp_dir, "mypy")
         subprocess.run(["git", "clone", REPO, mypy_dir, "--depth=1"], check=True)
+        shutil.rmtree("lib-rt")
         shutil.copytree(os.path.join(mypy_dir, "mypyc", "lib-rt"), "lib-rt", dirs_exist_ok=True)
 
 
