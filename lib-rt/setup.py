@@ -9,7 +9,7 @@ import os
 import subprocess
 import sys
 from distutils import ccompiler, sysconfig
-from distutils.command.build_ext import build_ext
+from setuptools.command.build_ext import build_ext
 from typing import Any
 
 from setuptools import Extension, setup
