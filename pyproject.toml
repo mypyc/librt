@@ -58,6 +58,10 @@ before-test = [
   "pip install pytest mypy_extensions",
 ]
 
+test-sources = [
+    "smoke_tests.py",
+]
+
 test-command = "pytest smoke_tests.py"
 
 test-skip = [
