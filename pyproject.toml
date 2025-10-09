@@ -42,7 +42,6 @@ Homepage = "https://github.com/mypyc/librt"
 Issues = "https://github.com/mypyc/mypyc/issues"
 
 [tool.cibuildwheel]
-
 build-frontend = "build"
 linux.manylinux-x86_64-image = "manylinux_2_28"
 linux.manylinux-aarch64-image = "manylinux_2_28"
@@ -54,6 +53,16 @@ build-verbosity = 1
 linux.before-all = [
   "yum install -y llvm-toolset || yum -v install -y llvm-toolset",
 ]
+
+before-test = [
+  "pip install pytest mypy_extensions",
+]
+
+test-sources = [
+    "smoke_tests.py",
+]
+
+test-command = "pytest smoke_tests.py"
 
 [tool.cibuildwheel.linux.environment]
 CC="clang"
