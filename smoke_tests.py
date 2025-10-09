@@ -82,4 +82,3 @@ def test_buffer_str_size() -> None:
         assert len(b.getvalue()) == len(s) + 1
         b = Buffer(b.getvalue())
         assert read_str(b) == s
-
