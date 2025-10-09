@@ -64,10 +64,6 @@ test-sources = [
 
 test-command = "pytest smoke_tests.py"
 
-test-skip = [
-  "*-macosx_arm64",
-]
-
 [tool.cibuildwheel.linux.environment]
 CC="clang"
 

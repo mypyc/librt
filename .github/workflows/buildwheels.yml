@@ -62,8 +62,6 @@ jobs:
                           "arch": the_arch,
                       }
                       # For some OS/arch we need to specify OS version
-                      if the_os == "macos":
-                          them["os-version"] = "13"
                       if the_os == "windows" and the_arch == "ARM64":
                           them["os-version"] = "11-arm"
                       if the_arch == "aarch64":
