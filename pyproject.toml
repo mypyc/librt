@@ -55,7 +55,7 @@ linux.before-all = [
 ]
 
 before-test = [
-  "pip install pytest mypy_extentions",
+  "pip install pytest mypy_extensions",
 ]
 
 test-command = "pytest smoke_tests.py"
