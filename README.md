@@ -32,7 +32,7 @@ Report any issues in the [mypyc issue tracker](https://github.com/mypyc/mypyc/is
 9. Click "Run workflow" and pick the newly created tag from the drop-down list. This will build
    *and upload* the wheels.
 10. After the workflow completes, verify that `pip install -U librt` installs the new version from PyPI.
-11. Create a PR to update the `librt` version in `mypy-requirements.txt` and `test-requirements.txt`
-  in the mypy repository.
+11. Create a PR to update the `librt` version in `mypy-requirements.txt`, `test-requirements.txt` and
+  `pyproject.toml` (`dependencies`, and `requires` under `build-system`) in the mypy repository.
 
 The process should take about 20 minutes.
