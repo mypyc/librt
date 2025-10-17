@@ -8,6 +8,7 @@ from librt.internal import (
     write_float, read_float,
     write_int, read_int,
     write_tag, read_tag,
+    write_bytes, read_bytes,
 )
 
 Tag = u8
@@ -43,6 +44,8 @@ def test_buffer_roundtrip() -> None:
     write_int(b, 2 ** 85)
     write_int(b, 1234512344)
     write_int(b, 1234512345)
+    write_bytes(b, b"foobar")
+    write_bytes(b, b"abc" * 1000)
 
     b = Buffer(b.getvalue())
     assert read_str(b) == "foo"
@@ -58,6 +61,8 @@ def test_buffer_roundtrip() -> None:
     assert read_int(b) == 2 ** 85
     assert read_int(b) == 1234512344
     assert read_int(b) == 1234512345
+    assert read_bytes(b) == b"foobar"
+    assert read_bytes(b) == b"abc" * 1000
 
 
 def test_buffer_int_size() -> None:
