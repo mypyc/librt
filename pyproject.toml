@@ -19,7 +19,7 @@ authors = [
     {name = "Jukka Lehtosalo", email = "jukka.lehtosalo@iki.fi"},
     {name = "Ivan Levkivskyi", email = "levkivskyi@gmail.com"},
 ]
-version = "0.4.0"
+version = "0.5.0"
 license = {text = "MIT"}
 classifiers = [
   "Development Status :: 3 - Alpha",
