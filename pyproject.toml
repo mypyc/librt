@@ -41,6 +41,9 @@ requires-python = ">=3.9"
 Homepage = "https://github.com/mypyc/librt"
 Issues = "https://github.com/mypyc/mypyc/issues"
 
+[tool.setuptools.packages.find]
+include = ["librt"]
+
 [tool.setuptools.package-data]
 librt = ["py.typed", "**/*.pyi"]
 
