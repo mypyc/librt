@@ -41,6 +41,9 @@ requires-python = ">=3.9"
 Homepage = "https://github.com/mypyc/librt"
 Issues = "https://github.com/mypyc/mypyc/issues"
 
+[tool.setuptools.package-data]
+librt = ["py.typed", "**/*.pyi"]
+
 [tool.cibuildwheel]
 build-frontend = "build"
 linux.manylinux-x86_64-image = "manylinux_2_28"
