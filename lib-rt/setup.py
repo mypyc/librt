@@ -84,7 +84,7 @@ else:
         cflags += ["-O3"]
         if X86_64:
             cflags.append("-msse4.2")  # Enable SIMD (see also mypyc/build.py)
-            if platform.system() == 'Emscripten':
+            if "PYODIDE_PACKAGE_ABI" in os.environ:
                 cflags.append("-msimd128")
     elif compiler.compiler_type == "msvc":
         cflags += ["/O2"]
