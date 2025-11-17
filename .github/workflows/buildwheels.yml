@@ -117,7 +117,7 @@ jobs:
           python-version: "3.9"
       - name: Build sdist
         run: |
-          cp lib-rt/* .
+          cp -r lib-rt/* .
           pip install --upgrade setuptools build
           python -m build --sdist
       - uses: actions/upload-artifact@v4
