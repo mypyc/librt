@@ -57,14 +57,17 @@ def spawn(self, cmd, **kwargs) -> None:  # type: ignore[no-untyped-def]
 
             for path in extra_options.keys():
                 if path in str(argument):
+                    opts = extra_options[path]
+                    if "PYODIDE_PACKAGE_ABI" in os.environ:
+                        opts += ["-msimd128"]
                     if compiler_type == "bcpp":
                         compiler = new_cmd.pop()
                         # Borland accepts a source file name at the end,
                         # insert the options before it
-                        new_cmd.extend(extra_options[path])
+                        new_cmd.extend(opts)
                         new_cmd.append(compiler)
                     else:
-                        new_cmd.extend(extra_options[path])
+                        new_cmd.extend(opts)
 
                     # path component is found, no need to search any further
                     break
