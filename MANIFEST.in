@@ -1,2 +1,4 @@
 # Headers are not included by default.
 include *.h
+# Add smoke tests to validate build from sources.
+smoke_tests.py
