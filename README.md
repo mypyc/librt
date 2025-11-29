@@ -17,12 +17,12 @@ Report any issues in the [mypyc issue tracker](https://github.com/mypyc/mypyc/is
 Since this repo should be kept in sync with `mypy`, it has an unusual directory structure.
 If you want to install from sources, it is recommended to use `sdist` wheel. If you want to
 install directly form the repo, you will need to execute `cp -r lib-rt/* .` before install.
-See issue #17 for discussion.
+See [issue #17](https://github.com/mypyc/librt/issues/17) for discussion.
 
 Unfortunatelly PyPy is not supported. If you develop a library that supports PyPy and you need
 `librt` only as a `mypy` dependency, you can skip PyPy in your CI matrix when type checking
 (since results of type checking will be identical on e.g. CPython 3.11 and PyPy 3.11).
-See issue #16 for discussion.
+See [issue #16](https://github.com/mypyc/librt/issues/16) for discussion.
 
 ## Making a release
 
