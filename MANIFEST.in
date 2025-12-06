@@ -1,4 +1,4 @@
 # Headers are not included by default.
-include *.h
+recursive-include . *.h
 # Add smoke tests to validate build from sources.
 include smoke_tests.py
