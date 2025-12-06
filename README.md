@@ -1,5 +1,10 @@
 # librt: mypyc runtime library
 
+[![Stable Version](https://img.shields.io/pypi/v/librt?color=blue)](https://pypi.org/project/librt/)
+[![Downloads](https://img.shields.io/pypi/dm/librt)](https://pypistats.org/packages/librt)
+[![Build Status](https://github.com/mypyc/librt/actions/workflows/buildwheels.yml/badge.svg)](https://github.com/mypyc/librt/actions)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+
 This library contains basic functionality that is useful in code compiled
 using mypyc, and efficient C implementations of various Python standard library
 classes and functions. Mypyc can produce faster extensions when you use `librt` in
