@@ -118,6 +118,7 @@ jobs:
       - name: Build sdist
         run: |
           cp -r lib-rt/* .
+          rm -rf lib-rt
           pip install --upgrade setuptools build
           python -m build --sdist
       - uses: actions/upload-artifact@v4
