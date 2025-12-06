@@ -1,5 +1,7 @@
 # Headers are not included by default.
 recursive-include . *.h
 recursive-include . *.c
+# This is a (shared) dependency of setup.py
+include build_setup.py
 # Add smoke tests to validate build from sources.
 include smoke_tests.py
