@@ -127,7 +127,7 @@ jobs:
           path: dist/*.tar.gz
 
   release:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref_type == 'tag' }}
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     permissions:
