@@ -30,7 +30,7 @@ jobs:
 
           # For each platform, what arch to use with cibuildwheel:
           platform_archs = {
-              "linux": ["x86_64", "i686", "aarch64"],
+              "linux": ["x86_64", "i686", "aarch64", "riscv64"],
               "macos": ["arm64", "x86_64"],
               "windows": ["x86", "AMD64", "ARM64"],
               "pyodide": ["wasm32"],
@@ -64,7 +64,7 @@ jobs:
                       # For some OS/arch we need to specify OS version
                       if the_os == "windows" and the_arch == "ARM64":
                           them["os-version"] = "11-arm"
-                      if the_arch == "aarch64":
+                      if the_arch == "aarch64" or the_arch == "riscv64":
                           # https://github.com/pypa/cibuildwheel/issues/2257
                           them["os-version"] = "22.04-arm"
                       all_them.append(them)
@@ -91,6 +91,12 @@ jobs:
         shell: bash
         run: |
           cp -r lib-rt/* .
+
+      - name: setup qemu for riscv64
+        uses: docker/setup-qemu-action@v3
+        if: matrix.arch == 'riscv64'
+        with:
+          platforms: riscv64
 
       - uses: pypa/cibuildwheel@v3.2.0
         with:
