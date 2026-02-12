@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+import base64
 from typing import Final
+
+import pytest
 from mypy_extensions import u8
 
+from librt.base64 import (
+    b64encode, b64decode, urlsafe_b64encode, urlsafe_b64decode
+)
 from librt.internal import (
     ReadBuffer,
     WriteBuffer,
@@ -138,3 +144,105 @@ def test_buffer_str_size() -> None:
         assert len(b.getvalue()) == len(s) + 2
         b = ReadBuffer(b.getvalue())
         assert read_str(b) == s
+
+
+def test_base64_basic() -> None:
+    assert b64encode(b"x") == b"eA=="
+
+    with pytest.raises(TypeError):
+        b64encode(bytearray(b"x"))  # type: ignore
+
+    assert b64decode(b"eA==") == b"x"
+
+    with pytest.raises(TypeError):
+        b64decode(bytearray(b"eA=="))  # type: ignore
+
+    for non_ascii in "\x80", "foo\u100bar", "foo\ua1234bar":
+        with pytest.raises(ValueError):
+            b64decode(non_ascii)
+
+
+def check_encode(b: bytes) -> None:
+    assert b64encode(b) == base64.b64encode(b)
+
+
+def check_decode(b: bytes) -> None:
+    enc = b64encode(b)
+    assert b64decode(enc) == base64.b64decode(enc)
+    if enc.isascii():
+        enc_str = enc.decode("ascii")
+        assert b64decode(enc_str) == base64.b64decode(enc_str)
+
+
+def test_base64_samples() -> None:
+    for i in range(256):
+        check_encode(bytes([i]))
+        check_encode(bytes([i]) + b"x")
+        check_encode(bytes([i]) + b"xy")
+        check_encode(bytes([i]) + b"xyz")
+        check_encode(bytes([i]) + b"xyza")
+        check_encode(b"x" + bytes([i]))
+        check_encode(b"xy" + bytes([i]))
+        check_encode(b"xyz" + bytes([i]))
+        check_encode(b"xyza" + bytes([i]))
+
+    b = b"a\x00\xb7" * 1000
+    for i in range(1000):
+        check_encode(b[:i])
+
+    for b in b"", b"ab", b"bac", b"1234", b"xyz88", b"abc" * 200:
+        check_encode(b)
+
+    for i in range(256):
+        check_decode(bytes([i]))
+        check_decode(bytes([i]) + b"x")
+        check_decode(bytes([i]) + b"xy")
+        check_decode(bytes([i]) + b"xyz")
+        check_decode(bytes([i]) + b"xyza")
+        check_decode(b"x" + bytes([i]))
+        check_decode(b"xy" + bytes([i]))
+        check_decode(b"xyz" + bytes([i]))
+        check_decode(b"xyza" + bytes([i]))
+
+    b = b"a\x00\xb7" * 1000
+    for i in range(1000):
+        check_decode(b[:i])
+
+    for b in b"", b"ab", b"bac", b"1234", b"xyz88", b"abc" * 200:
+        check_decode(b)
+
+
+def check_urlsafe_encode(b: bytes) -> None:
+    assert urlsafe_b64encode(b) == base64.urlsafe_b64encode(b)
+
+
+def check_urlsafe_decode(b: bytes) -> None:
+    enc = urlsafe_b64encode(b)
+    assert urlsafe_b64decode(enc) == base64.urlsafe_b64decode(enc)
+    enc2 = b64encode(b)
+    assert urlsafe_b64decode(enc2) == base64.urlsafe_b64decode(enc2)
+
+
+def testBase64_urlsafe() -> None:
+    check_urlsafe_encode(b"")
+    check_urlsafe_encode(b"a")
+    check_urlsafe_encode(b"\xf8")
+    check_urlsafe_encode(b"\xfc")
+    check_urlsafe_encode(b"\xfcx")
+    check_urlsafe_encode(b"\xfcxy")
+    check_urlsafe_encode(b"\xfcxyz")
+    check_urlsafe_encode(bytes([x for x in range(256)]))
+
+    check_urlsafe_decode(b"")
+    check_urlsafe_decode(b"a")
+    check_urlsafe_decode(b"\xf8")
+    check_urlsafe_decode(b"\xfc")
+    check_urlsafe_decode(b"\xfcx")
+    check_urlsafe_decode(b"\xfcxy")
+    check_urlsafe_decode(b"\xfcxyz")
+    check_urlsafe_decode(bytes([x for x in range(256)]))
+
+    assert urlsafe_b64decode(b" e A = == !") == b"x"
+    for b in b"eA", b"eA=", b"eHk":
+        with pytest.raises(ValueError):
+            b64decode(b)
