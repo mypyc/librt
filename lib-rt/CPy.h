@@ -149,6 +149,9 @@ CPyTagged CPyTagged_BitwiseLongOp_(CPyTagged a, CPyTagged b, char op);
 CPyTagged CPyTagged_Rshift_(CPyTagged left, CPyTagged right);
 CPyTagged CPyTagged_Lshift_(CPyTagged left, CPyTagged right);
 CPyTagged CPyTagged_BitLength(CPyTagged self);
+PyObject *CPyTagged_ToBytes(CPyTagged self, Py_ssize_t length, PyObject *byteorder, int signed_flag);
+PyObject *CPyTagged_ToBigEndianBytes(CPyTagged self, Py_ssize_t length, int signed_flag);
+PyObject *CPyTagged_ToLittleEndianBytes(CPyTagged self, Py_ssize_t length, int signed_flag);
 
 PyObject *CPyTagged_Str(CPyTagged n);
 CPyTagged CPyTagged_FromFloat(double f);
@@ -605,8 +608,8 @@ static void CPy_DecRef(PyObject *p) {
 }
 
 CPy_NOINLINE
-static void CPy_XDecRef(PyObject *p) {
-    CPy_XDECREF(p);
+static void CPy_XDecRef(void *p) {
+    CPy_XDECREF((PyObject *)p);
 }
 
 static inline CPyTagged CPyObject_Size(PyObject *obj) {
@@ -790,7 +793,7 @@ PyObject *CPyBytes_Join(PyObject *sep, PyObject *iter);
 CPyTagged CPyBytes_Ord(PyObject *obj);
 PyObject *CPyBytes_Multiply(PyObject *bytes, CPyTagged count);
 int CPyBytes_Startswith(PyObject *self, PyObject *subobj);
-
+int CPyBytes_Endswith(PyObject *self, PyObject *subobj);
 int CPyBytes_Compare(PyObject *left, PyObject *right);
 
 

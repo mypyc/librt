@@ -21,6 +21,8 @@ def main() -> None:
             dirs_exist_ok=True,
         )
         Path("librt/py.typed").touch()
+        subprocess.run(["git", "add", "lib-rt"], check=True)
+        subprocess.run(["git", "add", "librt"], check=True)
 
 
 if __name__ == "__main__":
