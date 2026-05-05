@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+from time import time as stdlib_time
 from typing import Final
 
 import pytest
@@ -20,6 +21,8 @@ from librt.internal import (
     write_bytes, read_bytes,
     cache_version,
 )
+from librt.strings import BytesWriter, StringWriter
+from librt.time import time
 
 Tag = u8
 TAG_A: Final[Tag] = 33
@@ -223,7 +226,7 @@ def check_urlsafe_decode(b: bytes) -> None:
     assert urlsafe_b64decode(enc2) == base64.urlsafe_b64decode(enc2)
 
 
-def testBase64_urlsafe() -> None:
+def test_base64_urlsafe() -> None:
     check_urlsafe_encode(b"")
     check_urlsafe_encode(b"a")
     check_urlsafe_encode(b"\xf8")
@@ -246,3 +249,53 @@ def testBase64_urlsafe() -> None:
     for b in b"eA", b"eA=", b"eHk":
         with pytest.raises(ValueError):
             b64decode(b)
+
+
+def test_time_increments() -> None:
+    t1 = time()
+    t2 = time()
+    # Time should not go backwards (allowing for same value due to precision)
+    assert t2 >= t1
+
+
+def test_time_comparable_to_stdlib() -> None:
+    # Our time() should return similar values to stdlib time.time()
+    our_time = time()
+    std_time = stdlib_time()
+    # Should be within 0.25 seconds of each other (usually should be much less,
+    # but keep it relatively high to avoid test flakiness in CI)
+    assert abs(our_time - std_time) < 0.25
+
+
+def test_bytes_writer_basics() -> None:
+    w = BytesWriter()
+    assert w.getvalue() == b""
+    assert len(w) == 0
+    assert repr(w) == "BytesWriter(b'')"
+
+    w = BytesWriter()
+    w.append(ord('a'))
+    w.write(b'bc')
+    assert w.getvalue() == b"abc"
+    assert repr(w) == "BytesWriter(b'abc')"
+
+
+def test_string_writer_basics() -> None:
+    w = StringWriter()
+    assert w.getvalue() == ""
+    assert repr(w) == "StringWriter('')"
+    w.append(ord('h'))
+    w.append(ord('i'))
+    assert repr(w) == "StringWriter('hi')"
+
+    # Kind 2 (UCS-2)
+    w2 = StringWriter()
+    w2.append(0x100)
+    w2.append(0x200)
+    assert repr(w2) == "StringWriter('" + chr(0x100) + chr(0x200) + "')"
+
+    # Kind 4 (UCS-4)
+    w3 = StringWriter()
+    w3.append(0x10000)
+    expected = "StringWriter('" + chr(0x10000) + "')"
+    assert repr(w3) == expected
