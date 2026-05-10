@@ -21,6 +21,7 @@ from librt.internal import (
     write_bytes, read_bytes,
     cache_version,
 )
+from librt.random import Random, random, randint
 from librt.strings import BytesWriter, StringWriter
 from librt.time import time
 
@@ -299,3 +300,34 @@ def test_string_writer_basics() -> None:
     w3.append(0x10000)
     expected = "StringWriter('" + chr(0x10000) + "')"
     assert repr(w3) == expected
+
+
+def test_random_construct() -> None:
+    r = Random()
+    assert isinstance(r, Random)
+
+
+def test_randint_basic() -> None:
+    r = Random()
+    for i in range(100):
+        val = r.randint(0, 10)
+        assert 0 <= val <= 10
+
+
+def test_random_basic() -> None:
+    r = Random()
+    for i in range(100):
+        val = r.random()
+        assert 0.0 <= val < 1.0
+
+
+def test_module_random_basic() -> None:
+    for i in range(100):
+        val = random()
+        assert 0.0 <= val < 1.0
+
+
+def test_module_randint_basic() -> None:
+    for i in range(100):
+        val = randint(0, 10)
+        assert 0 <= val <= 10
