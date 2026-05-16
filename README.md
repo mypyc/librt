@@ -17,7 +17,7 @@ Here are some feature highlights:
  * [librt.strings](https://mypyc.readthedocs.io/en/latest/librt_strings.html) defines fast string and bytes builders and binary data read/write helpers
  * [librt.base64](https://mypyc.readthedocs.io/en/latest/librt_base64.html) provides fast SIMD Base64 encoding/decoding
 
-For more details, refer to [librt documentation](https://mypyc.readthedocs.io/en/latest/librt.html)].
+For more details, refer to [librt documentation](https://mypyc.readthedocs.io/en/latest/librt.html).
 
 This repository is only used to build and publish the mypyc runtime library. Development
 happens in the [mypy repository](https://github.com/python/mypy). Code is then perodically
