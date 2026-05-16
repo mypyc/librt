@@ -19,12 +19,12 @@ Here are some feature highlights:
 
 For more details, refer to [librt documentation](https://mypyc.readthedocs.io/en/latest/librt.html).
 
+Report any issues in the [mypyc issue tracker](https://github.com/mypyc/mypyc/issues).
+
 This repository is only used to build and publish the mypyc runtime library. Development
 happens in the [mypy repository](https://github.com/python/mypy). Code is then perodically
 synced from the `mypyc/lib-rt`
 [subdirectory in the mypy repository](https://github.com/python/mypy/tree/master/mypyc/lib-rt).
-
-Report any issues in the [mypyc issue tracker](https://github.com/mypyc/mypyc/issues).
 
 ## Developer notes
 
