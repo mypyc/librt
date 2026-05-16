@@ -6,9 +6,10 @@
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
 This library contains basic functionality that is useful in code compiled
-using mypyc, and efficient C alternatives to various Python standard library
-classes and functions. Mypyc can produce faster extensions when you use `librt` in
-the code you compile. `librt` also contains some internal library features used by mypy.
+using the [mypyc](https://mypyc.readthedocs.io/en/latest/) compiler, and efficient
+C alternatives to various Python standard library classes and functions. Mypyc can
+produce faster extensions when you use `librt` in the code you compile. `librt` also
+contains some internal library features used by mypy.
 
 Here are some feature highlights:
 
@@ -16,7 +17,7 @@ Here are some feature highlights:
  * [librt.strings](https://mypyc.readthedocs.io/en/latest/librt_strings.html) defines fast string and bytes builders and binary data read/write helpers
  * [librt.base64](https://mypyc.readthedocs.io/en/latest/librt_base64.html) provides fast SIMD Base64 encoding/decoding
 
-For more details, refer to [librt documentation(https://mypyc.readthedocs.io/en/latest/librt.html)].
+For more details, refer to [librt documentation](https://mypyc.readthedocs.io/en/latest/librt.html)].
 
 This repository is only used to build and publish the mypyc runtime library. Development
 happens in the [mypy repository](https://github.com/python/mypy). Code is then perodically
