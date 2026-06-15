@@ -44,7 +44,7 @@ jobs:
           # Some plaform/arch combinations are only suported on newer Python versions:
           platform_arch_pys = {
               ("windows", "ARM64"): ["cp311", "cp312", "cp313", "cp314"],
-              ("pyodide", "wasm32"): ["cp312", "cp313"],
+              ("pyodide", "wasm32"): ["cp313", "cp314"],
           }
 
           # Which OS to use for build (if different from platform name):
@@ -98,7 +98,7 @@ jobs:
         with:
           platforms: riscv64
 
-      - uses: pypa/cibuildwheel@v3.2.0
+      - uses: pypa/cibuildwheel@v4.1.0
         with:
           config-file: pyproject.toml
         env:
@@ -145,8 +145,6 @@ jobs:
           pattern: dist-*
           path: dist
           merge-multiple: true
-      - name: Skip WASM wheels (not supported by PyPI yet)
-        run: rm dist/*_wasm32.whl
       - name: Release to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
