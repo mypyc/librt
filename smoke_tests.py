@@ -23,6 +23,7 @@ from librt.internal import (
 )
 from librt.random import Random, random, randint
 from librt.strings import BytesWriter, StringWriter
+from librt.threading import Lock
 from librt.time import time
 
 Tag = u8
@@ -331,3 +332,26 @@ def test_module_randint_basic() -> None:
     for i in range(100):
         val = randint(0, 10)
         assert 0 <= val <= 10
+
+
+def test_lock_acquire_release() -> None:
+    lock = Lock()
+    assert lock.locked() is False
+    assert lock.acquire() is True
+    assert lock.locked() is True
+    lock.release()
+    assert lock.locked() is False
+
+
+def test_lock_acquire_non_blocking() -> None:
+    lock = Lock()
+    assert lock.acquire(blocking=False) is True
+    assert lock.locked() is True
+    lock.release()
+
+
+def test_lock_with_statement() -> None:
+    lock = Lock()
+    with lock:
+        assert lock.locked() is True
+    assert lock.locked() is False
