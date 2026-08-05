@@ -98,7 +98,7 @@ jobs:
         with:
           platforms: riscv64
 
-      - uses: pypa/cibuildwheel@v4.1.0
+      - uses: pypa/cibuildwheel@v4.2.0
         with:
           config-file: pyproject.toml
         env:
