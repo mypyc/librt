@@ -43,8 +43,8 @@ jobs:
 
           # Some plaform/arch combinations are only suported on newer Python versions:
           platform_arch_pys = {
-              ("windows", "ARM64"): ["cp311", "cp312", "cp313", "cp314"],
-              ("pyodide", "wasm32"): ["cp313", "cp314"],
+              ("windows", "ARM64"): ["cp311", "cp312", "cp313", "cp314", "cp315"],
+              ("pyodide", "wasm32"): ["cp313", "cp314", "cp315"],
           }
 
           # Which OS to use for build (if different from platform name):
