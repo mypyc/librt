@@ -92,17 +92,11 @@ jobs:
         run: |
           cp -r lib-rt/* .
 
-      - name: setup qemu for riscv64
+      - name: setup qemu for ${{ matrix.arch }}
         uses: docker/setup-qemu-action@v3
-        if: matrix.arch == 'riscv64'
+        if: ${{ matrix.arch == 'riscv64' || matrix.arch == 'ppc64le' }}
         with:
-          platforms: riscv64
-
-      - name: setup qemu for ppc64le
-        uses: docker/setup-qemu-action@v3
-        if: matrix.arch == 'ppc64le'
-        with:
-          platforms: ppc64le
+          platforms: ${{ matrix.arch }}
 
       - uses: pypa/cibuildwheel@v4.2.0
         with:
