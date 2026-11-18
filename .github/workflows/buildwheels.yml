@@ -102,7 +102,7 @@ jobs:
         with:
           platforms: ${{ matrix.arch }}
 
-      - uses: pypa/cibuildwheel@v4.2.0
+      - uses: pypa/cibuildwheel@v4.3.5
         with:
           config-file: pyproject.toml
         env:
