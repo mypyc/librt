@@ -36,6 +36,9 @@ classifiers = [
   "Typing :: Typed",
 ]
 requires-python = ">=3.9"
+dependencies = [
+    "mypy_extensions>=1.2.0",
+]
 [project.urls]
 Homepage = "https://github.com/mypyc/librt"
 Issues = "https://github.com/mypyc/mypyc/issues"
