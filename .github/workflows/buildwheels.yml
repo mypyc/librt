@@ -67,6 +67,10 @@ jobs:
                       if the_arch == "aarch64" or the_arch == "riscv64":
                           # https://github.com/pypa/cibuildwheel/issues/2257
                           them["os-version"] = "22.04-arm"
+                      if the_arch == "i686":
+                          # DNS lookups fail inside i686 manylinux containers on
+                          # ubuntu-26.04 runners
+                          them["os-version"] = "24.04"
                       all_them.append(them)
 
           pprint.pprint(all_them)
