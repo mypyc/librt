@@ -5,7 +5,7 @@ from time import time as stdlib_time
 from typing import Final
 
 import pytest
-from mypy_extensions import u8
+from mypy_extensions import u8, u64
 
 from librt.base64 import (
     b64encode, b64decode, urlsafe_b64encode, urlsafe_b64decode
@@ -22,9 +22,10 @@ from librt.internal import (
     cache_version,
 )
 from librt.random import Random, random, randint
-from librt.strings import BytesWriter, StringWriter
+from librt.strings import BytesWriter, StringWriter, read_u64_le
 from librt.threading import Lock
 from librt.time import time
+from librt.vecs import vec, append, pop
 
 Tag = u8
 TAG_A: Final[Tag] = 33
@@ -355,3 +356,35 @@ def test_lock_with_statement() -> None:
     with lock:
         assert lock.locked() is True
     assert lock.locked() is False
+
+
+def test_read_u64_le() -> None:
+    b = bytes(range(1, 9)) + b"\xff" * 8
+    assert read_u64_le(b, 0) == 0x0807060504030201
+    assert read_u64_le(b, 8) == 2**64 - 1
+    assert read_u64_le(b, 4) == int.from_bytes(b[4:12], "little")
+    with pytest.raises(IndexError):
+        read_u64_le(b, 9)
+
+
+def test_vec_u64_basics() -> None:
+    v = vec[u64]()
+    assert len(v) == 0
+    v = append(v, 1)
+    v = append(v, 2**64 - 1)
+    assert len(v) == 2
+    assert v[0] == 1
+    assert v[1] == 2**64 - 1
+    assert v[-1] == 2**64 - 1
+    assert list(v) == [1, 2**64 - 1]
+    assert repr(v) == "vec[u64]([1, 18446744073709551615])"
+    v = vec[u64]([5, 6, 7])
+    v[1] = 0
+    assert list(v) == [5, 0, 7]
+    v, x = pop(v)
+    assert x == 7
+    assert list(v) == [5, 0]
+    with pytest.raises((OverflowError, ValueError)):
+        append(v, -1)
+    with pytest.raises((OverflowError, ValueError)):
+        append(v, 2**64)
